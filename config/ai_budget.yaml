@@ -1,0 +1,17 @@
+daily_limits:
+  normal: 20       # score < 0.3
+  elevated: 50     # 0.3 <= score < 0.6
+  warning: 200     # 0.6 <= score < 0.8
+  critical: -1     # score >= 0.8, unlimited (-1)
+
+risk_level_thresholds:
+  normal: 0.3
+  elevated: 0.6
+  warning: 0.8
+
+call_priorities:
+  premortem_generation: 3
+  context_interpretation: 2
+  hypothesis_evaluation: 2
+  pattern_matching: 1
+  post_mortem: 3

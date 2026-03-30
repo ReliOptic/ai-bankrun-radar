@@ -1,0 +1,20 @@
+system:
+  name: "Contagion Radar"
+  version: "0.1.0"
+  log_level: "INFO"
+  data_dir: "./data"
+
+ai:
+  provider: "openrouter"
+  base_url: "https://openrouter.ai/api/v1"
+  api_key: "${OPENROUTER_API_KEY}"
+  model: "anthropic/claude-sonnet-4"
+  max_tokens: 2000
+  temperature: 0.3
+
+api_keys:
+  etherscan: "${ETHERSCAN_API_KEY}"
+  twitter_bearer: "${TWITTER_BEARER_TOKEN}"
+  reddit_client_id: "${REDDIT_CLIENT_ID}"
+  reddit_client_secret: "${REDDIT_CLIENT_SECRET}"
+  news_api: "${NEWS_API_KEY}"

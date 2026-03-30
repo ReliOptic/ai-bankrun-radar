@@ -1,0 +1,28 @@
+schedule:
+  daily_refresh_hour_utc: 6
+  on_score_cross_up: [0.5, 0.7, 0.9]
+  on_score_cross_down_from: 0.7
+  on_score_cross_down_to: 0.5
+
+entities:
+  - id: "circle_usdc"
+    name: "USDC (Circle)"
+    type: "stablecoin"
+  - id: "tether_usdt"
+    name: "USDT (Tether)"
+    type: "stablecoin"
+  - id: "maker_dai"
+    name: "DAI (MakerDAO)"
+    type: "stablecoin"
+  - id: "aave_v3"
+    name: "Aave V3"
+    type: "defi_protocol"
+  - id: "lido"
+    name: "Lido"
+    type: "defi_protocol"
+
+hypothesis:
+  max_active_per_entity: 5
+  expiry_days: 30
+  confidence_escalation_threshold: 0.7
+  min_data_signals: 2

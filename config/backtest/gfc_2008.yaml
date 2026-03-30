@@ -1,0 +1,13 @@
+scenario:
+  name: "Global Financial Crisis 2008"
+  description: "Lehman Brothers collapse and systemic contagion"
+  date_range:
+    start: "2007-06-01"
+    end: "2008-10-31"
+  crisis_timestamp: "2008-09-15T00:00:00Z"
+  entities:
+    - "lehman_brothers"
+    - "bear_stearns"
+    - "aig"
+  expected_detection_lead_hours: 720
+  expected_min_alert_level: 4

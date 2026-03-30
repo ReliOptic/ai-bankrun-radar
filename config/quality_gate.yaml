@@ -1,0 +1,27 @@
+sources:
+  defillama:
+    max_stale_seconds: 900       # 15 min
+    circuit_breaker_failures: 3
+    completeness_required_fields: ["tvl", "chain"]
+  etherscan:
+    max_stale_seconds: 600       # 10 min
+    circuit_breaker_failures: 3
+    completeness_required_fields: ["block_number"]
+  yahoo_finance:
+    max_stale_seconds: 300       # 5 min
+    circuit_breaker_failures: 3
+    completeness_required_fields: ["price", "volume"]
+  social:
+    max_stale_seconds: 1800      # 30 min
+    circuit_breaker_failures: 5
+    completeness_required_fields: ["text"]
+  news:
+    max_stale_seconds: 3600      # 1 hour
+    circuit_breaker_failures: 5
+    completeness_required_fields: ["title"]
+
+score_discounts:
+  FRESH: 1.0
+  STALE: 0.7
+  DEGRADED: 0.4
+  OFFLINE: 0.0

@@ -1,0 +1,58 @@
+composite:
+  weights:
+    topology: 0.35
+    narrative: 0.30
+    monoculture: 0.35
+  cross_engine_multiplier: 1.5
+  cross_engine_threshold: 0.4
+  gp_run_probability_weight: 0.4
+
+topology:
+  vulnerability:
+    leverage_weight: 0.30
+    maturity_mismatch_weight: 0.25
+    concentration_weight: 0.25
+    centrality_weight: 0.20
+  cascade:
+    simulation_runs: 1000
+    shock_magnitude_pct: 0.15
+    failure_threshold: 0.50
+  graph:
+    min_edge_weight_usd: 1_000_000
+    max_nodes: 500
+
+narrative:
+  classifier:
+    categories:
+      - bank_run
+      - de_peg
+      - liquidity_crisis
+      - contagion
+      - confidence_loss
+      - regulatory_action
+    confidence_threshold: 0.7
+  momentum:
+    spread_velocity_window_seconds: 3600
+    algo_sensitivity_lookback_hours: 24
+    liquidity_baseline_days: 30
+    alert_threshold: 2.5
+
+monoculture:
+  entropy:
+    num_strategy_clusters: 10
+    clustering_window_minutes: 60
+    index_alert_threshold: 0.75
+  correlation:
+    lookback_minutes: 120
+    high_correlation_threshold: 0.85
+
+models:
+  goldstein_pauzner:
+    lambda_: 0.25
+    R: 2.0
+    risk_aversion: 2.0
+    epsilon: 0.001
+    alert_threshold: 0.30
+  diamond_dybvig:
+    lambda_: 0.25
+    R: 2.0

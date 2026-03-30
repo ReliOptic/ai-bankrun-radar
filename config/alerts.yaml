@@ -1,0 +1,27 @@
+levels:
+  1:
+    name: "Monitoring"
+    color: "green"
+    composite_threshold: 0.20
+  2:
+    name: "Elevated"
+    color: "yellow"
+    composite_threshold: 0.40
+  3:
+    name: "Warning"
+    color: "dark_orange"
+    composite_threshold: 0.60
+  4:
+    name: "Critical"
+    color: "red"
+    composite_threshold: 0.80
+  5:
+    name: "Systemic"
+    color: "magenta"
+    composite_threshold: 0.95
+
+novelty_multiplier:
+  routine_max_similarity: 0.7
+  novel_max_similarity: 0.3
+  routine_multiplier: 1.0
+  novel_multiplier: 1.5

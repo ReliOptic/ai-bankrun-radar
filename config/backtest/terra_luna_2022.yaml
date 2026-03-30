@@ -1,0 +1,13 @@
+scenario:
+  name: "TerraLuna / UST Collapse 2022"
+  description: "Algorithmic stablecoin death spiral"
+  date_range:
+    start: "2022-04-01"
+    end: "2022-05-15"
+  crisis_timestamp: "2022-05-09T00:00:00Z"
+  entities:
+    - "terra_ust"
+    - "terra_luna"
+    - "anchor_protocol"
+  expected_detection_lead_hours: 24
+  expected_min_alert_level: 3
