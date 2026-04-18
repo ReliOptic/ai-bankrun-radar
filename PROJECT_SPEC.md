@@ -2,8 +2,8 @@
 
 **Project**: `ai-bankrun-radar-mythos`
 **Owner**: Kiwon Cho (@kiwon-cho / KAIST PMBA 13기)
-**Spec version**: 0.1
-**Last updated**: 2026-04-18
+**Spec version**: 0.2
+**Last updated**: 2026-04-18 (v0.2: ADR-006 reframing applied)
 **Target**: Claude Code Spec-Driven Development (parallel agent implementation)
 
 -----
@@ -25,6 +25,12 @@
 **Not**: 실시간 뱅크런 예측기 (아직 가설 미검증)
 **Yes**: Mythos-post 환경에서 5개 독립 실험(E23-E27)을 실행하는 관측·분석 파이프라인 + 결과를 축적하는 Knowledge Base
 
+**Observation target (ADR-006)**:
+
+- **Population**: AI 에이전트 (LLM 기반 자율 트랜잭션 발신자)
+- **Primary DV**: `H_agent(t)` — AI 에이전트 트랜잭션 행동의 Shannon 엔트로피
+- **Stablecoin의 역할**: 에이전트가 움직이는 자산 표면(channel), 관측 대상 아님. `H_asset(t)`는 맥락 증거로 유지.
+
 ### §0.3 Success Definition
 
 - 90일 내 5개 실험 모두 acceptance criteria 통과
@@ -38,11 +44,14 @@
 
 ### §1.1 In Scope
 
-- 스테이블코인(USDC, USDT, PYUSD, DAI, FDUSD, RLUSD) 온체인 트랜잭션 수집
-- 시간당 Shannon 엔트로피 계산 파이프라인
-- Mythos 발표 이벤트 스터디 (T=2026-04-07)
-- 네트워크 상관 분석 (spectral radius, participation ratio)
-- AI 에이전트 행동 프록시 측정 (3종)
+- **AI 에이전트 식별 및 행동 엔트로피 측정 (primary, ADR-006)**
+  - Layer 1: Virtuals Protocol, Fetch.ai, Olas, Bittensor, Farcaster bot labels, ERC-4337 paymaster
+  - Layer 2: Layer 1 라벨로 학습한 behavioral fingerprinting 분류기 (전체 EOA 대상)
+  - MEV searcher 라벨 (EigenPhi, libMEV) — 3-arm DiD의 non-LLM 자동화 control
+- 스테이블코인(USDC, USDT, PYUSD, DAI, FDUSD, RLUSD) 온체인 트랜잭션 수집 — **asset-surface channel**
+- 시간당 Shannon 엔트로피 계산 파이프라인 (`H_agent` primary, `H_asset` secondary)
+- Mythos 발표 이벤트 스터디 (T=2026-04-07), **3-arm DiD**: AI agent vs human vs MEV bot
+- 네트워크 상관 분석 (spectral radius, participation ratio) — 전체 시장 및 AI-agent subset
 - SVB counterfactual ABM 시뮬레이션
 - SQLite Knowledge Base + nightly recalibration
 - 실험 결과 Markdown 보고서 자동 생성
@@ -91,7 +100,9 @@
 **F2. Entropy Computation**
 
 - F2.1: 시간당 Shannon 엔트로피 계산 `H(t) = -Σ pᵢ log pᵢ`
-- F2.2: Volume-weighted 엔트로피 `H_w(t)` 병기
+  - **Primary**: `H_agent(t)` — AI agent 트랜잭션 action-type 분포 엔트로피 (ADR-006)
+  - **Secondary**: `H_asset(t)` — 스테이블코인 상환 카테고리 엔트로피 (맥락 증거)
+- F2.2: Volume-weighted 엔트로피 `H_w(t)` 병기 (두 DV 모두)
 - F2.3: Rolling 30-day baseline과 z-score 계산
 - F2.4: Change point detection (Bai-Perron)
 
@@ -101,6 +112,11 @@
 - F3.2: GARCH(1,1) 기반 CAR 계산
 - F3.3: Placebo test 자동화 (random T)
 - F3.4: Synthetic control 생성
+- F3.5: **3-arm DiD (ADR-006)**:
+  - Treatment: Layer 1 AI agents
+  - Control 1: Farcaster verified human-only accounts
+  - Control 2: MEV searcher bots (non-LLM automation)
+  - 식별 논리: AI vs human 유의 + AI vs MEV 유의 → LLM-specific 효과
 
 **F4. Network Analysis**
 
@@ -108,11 +124,19 @@
 - F4.2: Eigendecomposition → λ₁, participation ratio
 - F4.3: Bootstrap confidence intervals (n=1000)
 
-**F5. Agent Proxy**
+**F5. AI Agent Identification & Behavioral Entropy (primary, ADR-006)**
 
-- F5.1: 공개 DeFi 에이전트 액션 로그 수집
-- F5.2: Semantic clustering (UMAP + HDBSCAN)
-- F5.3: KL divergence 시계열 계산
+- F5.1: **Layer 1 — Narrow but Certain**
+  - Virtuals Protocol, Fetch.ai, Olas, Bittensor on-chain activity
+  - ERC-4337 paymaster event logs (Coinbase OnchainKit, Alchemy AA 시그니처)
+  - Farcaster `client: bot` / self-declared AI 계정 (Neynar `/user/bulk`)
+- F5.2: **Layer 2 — Wide but Uncertain**
+  - Behavioral fingerprinting 분류기 (supervised training on Layer 1 labels)
+  - Features: 트랜잭션 간격 균일성, 24/7 활동률, gas 최적화 패턴, multi-hop 구성 속도
+  - 전체 EOA에 AI-agent-score 부여, threshold 튜닝
+- F5.3: Action-type 분포 기반 `H_agent(t)` 계산 (F2와 연결)
+- F5.4: Semantic clustering (UMAP + HDBSCAN) + KL divergence 시계열
+- F5.5: Cross-validation — Layer 1 vs Layer 2 결과 일치/불일치 리포팅
 
 **F6. ABM Simulation**
 
@@ -247,6 +271,12 @@ ai-bankrun-radar-mythos/
 - 결정: 데이터 수집·수치 계산은 코드가, 해석·나라티브 생성만 Claude API
 - 이유: 비용 규율, 결정적 재현성
 
+**ADR-006: 관측 대상 = AI 에이전트 (스테이블코인은 channel)**
+
+- 결정: Primary DV `H_agent(t)`, two-layer identification, 3-arm DiD
+- 이유: Core Hypothesis와 측정량 정렬, LLM-specific 효과 식별 가능
+- 상세: `docs/adr/ADR-006-ai-agent-target-population.md`
+
 -----
 
 ## §5. Interfaces
@@ -260,6 +290,11 @@ ai-bankrun-radar-mythos/
 |CryptoPanic       |`cryptopanic.com/api/v1`       |none   |unlimited         |
 |FRED              |`api.stlouisfed.org/fred`      |API key|unlimited         |
 |Farcaster (Neynar)|`api.neynar.com/v2`            |API key|300 req/min (free)|
+|Virtuals Protocol |Dune dashboards (mirrored)     |Dune   |via Dune quota    |
+|Fetch.ai          |`rest-fetchhub.fetch.ai`       |none   |public            |
+|Olas / Autonolas  |`gateway.autonolas.tech`       |none   |public            |
+|EigenPhi (MEV)    |`eigenphi.io/api`              |API key|tier-based        |
+|libMEV            |`libmev.com` public datasets   |none   |bulk download     |
 |Anthropic         |`api.anthropic.com/v1/messages`|API key|tier-based        |
 
 ### §5.2 Internal Contracts
@@ -343,6 +378,8 @@ method: string                 # 'GARCH' | 'RDD' | 'SynthControl'
 |Mythos 관련 post-announcement 시장 반응이 이미 가격 반영|중 |고 |intraday granularity로 15분 단위 분석 추가          |
 |연구자 단일(bus factor=1)                       |고 |중 |모든 결정 ADR화, KB/데이터 완전 오픈소스화                 |
 |Anthropic Mythos 관련 추가 정보 공개 → 연구 전제 변경    |중 |중 |spec version 관리, 변경 시 ADR 추가                |
+|기관 운영 AI 트레이더가 Layer 1/2 어디에도 포착 안 됨 (ADR-006 D5)|고 |고 |논문·정책 브리프에 external validity 한계 정면 명시, "공개 실험실급" 결론임을 분명히 표기|
+|Behavioral fingerprinting 분류기의 false-positive 누출|중 |고 |Layer 1 held-out precision/recall 하한 사전 등록, Layer 1/2 교차검증 필수|
 
 -----
 
@@ -377,7 +414,7 @@ method: string                 # 'GARCH' | 'RDD' | 'SynthControl'
 ### §9.1 Methodology
 
 - Q1: Mythos 발표 효과와 T+1 (2026-04-08) 크립토 시장 전반 변동성 효과의 분리 전략?
-- Q2: AI 에이전트 프록시의 validity 검증 gold standard는?
+- Q2: AI 에이전트 프록시의 validity 검증 gold standard는? **(ADR-006으로 부분 해결: Layer 1/2 교차검증을 self-refuting 검증으로 채택. 잔여 이슈는 Q13-Q15로 이관.)**
 - Q3: SVB 모델 파라미터 calibration 시 prior 설정의 민감도?
 
 ### §9.2 Technical
@@ -397,6 +434,12 @@ method: string                 # 'GARCH' | 'RDD' | 'SynthControl'
 - Q10: 결과 발표 플랫폼 (SSRN vs arXiv vs 학회)?
 - Q11: 정책 브리프의 최적 타이밍 (FDIC final rules 전/후)?
 - Q12: 코드베이스 오픈소스화 라이선스 (MIT vs Apache 2.0)?
+
+### §9.5 Identification (ADR-006 spawn)
+
+- Q13: Behavioral fingerprinting 분류기의 false-positive rate 허용 상한은? (권고 시작점: ≤ 10% on Layer 1 held-out)
+- Q14: Layer 1 / Layer 2 결과가 상반될 때 어떤 결론을 main result로 제시할지 사전 등록(pre-registration) 여부?
+- Q15: MEV searcher와 LLM-driven arbitrage agent의 경계 사례 처리 규칙?
 
 -----
 
