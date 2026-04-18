@@ -2,8 +2,8 @@
 
 **Project**: `ai-bankrun-radar-mythos`
 **Owner**: Kiwon Cho (@kiwon-cho / KAIST PMBA 13기)
-**Spec version**: 0.2
-**Last updated**: 2026-04-18 (v0.2: ADR-006 reframing applied)
+**Spec version**: 0.3
+**Last updated**: 2026-04-18 (v0.3: ADR-007 two-set structure applied)
 **Target**: Claude Code Spec-Driven Development (parallel agent implementation)
 
 -----
@@ -23,7 +23,10 @@
 ### §0.2 What We Are Building
 
 **Not**: 실시간 뱅크런 예측기 (아직 가설 미검증)
-**Yes**: Mythos-post 환경에서 5개 독립 실험(E23-E27)을 실행하는 관측·분석 파이프라인 + 결과를 축적하는 Knowledge Base
+**Yes**: Mythos-post 환경에서 5개 실험을 **두 세트로 묶어** 실행하는 관측·분석 파이프라인 + 결과를 축적하는 Knowledge Base (ADR-007)
+
+- **실험 1 (Direct Hypothesis Test)**: E23 → E26. 목적은 Core Hypothesis의 직접 검정. main result를 산출.
+- **실험 2 (Triangulation & Simulation)**: E24 + E25 + E27. 목적은 실험 1 결과의 자산 표면·네트워크 구조·반사실 시뮬레이션에 의한 교차검증. 독립 결론이 아닌 "실험 1과의 방향 일치 여부"로 보고.
 
 **Observation target (ADR-006)**:
 
@@ -205,19 +208,23 @@ ai-bankrun-radar-mythos/
 │   └── kb.sqlite            (knowledge base)
 ├── src/
 │   ├── ingest/              (F1)
-│   ├── entropy/             (F2)
-│   ├── event_study/         (F3)
+│   ├── agent_id/            (F5 — 실험 1 Foundation, promoted to first-class)
+│   │   ├── layer1/          (self-declared + ERC-4337)
+│   │   └── layer2/          (behavioral fingerprinting)
+│   ├── entropy/             (F2 — H_agent primary, H_asset secondary)
+│   ├── event_study/         (F3 — 3-arm DiD)
 │   ├── network/             (F4)
-│   ├── agent_proxy/         (F5)
 │   ├── abm/                 (F6)
 │   ├── kb/                  (F7)
 │   └── reports/             (F8)
 ├── experiments/
-│   ├── E23_baseline/
-│   ├── E24_event_study/
-│   ├── E25_correlation/
-│   ├── E26_monoculture/
-│   └── E27_svb_abm/
+│   ├── set1_direct/                   (실험 1 — main claim)
+│   │   ├── E23_agent_id/
+│   │   └── E26_agent_entropy/
+│   └── set2_triangulation/            (실험 2 — corroboration)
+│       ├── E24_asset_channel/
+│       ├── E25_network/
+│       └── E27_svb_abm/
 ├── reports/
 │   └── output/
 ├── jobs/
@@ -277,6 +284,12 @@ ai-bankrun-radar-mythos/
 - 이유: Core Hypothesis와 측정량 정렬, LLM-specific 효과 식별 가능
 - 상세: `docs/adr/ADR-006-ai-agent-target-population.md`
 
+**ADR-007: 두-세트 실험 구조 (실험 1 / 실험 2)**
+
+- 결정: E23+E26 = 실험 1 (direct hypothesis test, main claim), E24+E25+E27 = 실험 2 (triangulation & simulation). 실험 2는 "실험 1과 방향 일치 여부"로 보고.
+- 이유: 무엇이 main claim을 결정하는지 문서·코드·일정에서 단일화
+- 상세: `docs/adr/ADR-007-two-set-experiment-structure.md`
+
 -----
 
 ## §5. Interfaces
@@ -330,37 +343,41 @@ method: string                 # 'GARCH' | 'RDD' | 'SynthControl'
 
 ## §6. Milestones
 
-### §6.1 Phase 1: Foundation (Week 1-2)
+Milestone은 ADR-007의 두-세트 구조를 따른다. **실험 1이 Phase 1-2, 실험 2가 Phase 3, 통합이 Phase 4.**
 
-- M1.1: Repo 초기화, CI/CD
-- M1.2: Data ingestion layer (F1)
-- M1.3: E23 baseline calibration 완료
-- M1.4: KB 스키마 확정
+### §6.1 Phase 1 — 실험 1 Foundation (Week 1-3)
 
-**Exit criteria**: E23 acceptance criteria 모두 통과
+- M1.1: Repo 재구성(set1/set2), CI/CD
+- M1.2: Data ingestion layer (F1) — AI agent 소스 포함
+- M1.3: **E23 agent identification calibration** (Layer 1 수집 + Layer 2 분류기 학습)
+- M1.4: KB 스키마 확정, classifier card 발행
 
-### §6.2 Phase 2: Event Analysis (Week 3-4)
+**Exit criteria**: E23 §1.5 acceptance 모두 통과. 통과 실패 시 §1.6 soft-fail plan을 ADR-008로 기록 후 진행.
 
-- M2.1: GARCH baseline 모델
-- M2.2: E24 event study 실행
-- M2.3: Placebo + synthetic control robustness checks
+### §6.2 Phase 2 — 실험 1 Primary (Week 4-6)
 
-**Exit criteria**: CAR 추정치 + 강건성 검정 통과
+- M2.1: `H_agent(t)` pipeline (F2) + 3-arm DiD estimator (F3.5)
+- M2.2: **E26 pre-registration 커밋** (post-window unlock 이전)
+- M2.3: Pre-window + interim analysis 실행
+- M2.4: T+30d 도달 시 main result 보고
 
-### §6.3 Phase 3: Network + Monoculture (Week 5-7)
+**Exit criteria**: E26 §2.7 acceptance 모두 통과 (지지/기각 무관, 결론 명확할 것).
 
-- M3.1: Correlation cascade (E25)
-- M3.2: Agent proxy 3종 (E26)
-- M3.3: 두 실험 결과의 교차 해석
+### §6.3 Phase 3 — 실험 2 Triangulation (Week 5-9, 실험 1과 부분 병렬)
 
-**Exit criteria**: Spectral radius 변화 + agent proxy KL 시계열 완성
+- M3.1: **E24** asset-channel event study (독립 실행 가능, Week 5 시작)
+- M3.2: **E25** network correlation + AI-agent subset (E23 output 의존, Week 6 시작)
+- M3.3: **E27** SVB ABM calibration + counterfactual (E23 파라미터 의존, Week 7 시작)
+- M3.4: 세 실험 각각 "실험 1과 방향 일치 여부" 테이블 첨부
 
-### §6.4 Phase 4: Simulation + Synthesis (Week 8-12)
+**Exit criteria**: 세 실험 acceptance 통과 + set-alignment 보고 완료.
 
-- M4.1: SVB data ingestion + β calibration (MCMC)
-- M4.2: 2026 counterfactual ABM 1000 runs
-- M4.3: 통합 논문 초안 (SSRN 제출 가능 수준)
-- M4.4: 정책 브리프 (한국어, 금융위 제출용)
+### §6.4 Phase 4 — Synthesis (Week 10-12)
+
+- M4.1: 통합 논문 초안 (실험 1 = main section, 실험 2 = robustness appendix)
+- M4.2: 정책 브리프 (한국어, 금융위 제출용) — 실험 1 결론 + 실험 2 일치 여부 요약
+- M4.3: KB 인수인계 문서
+- M4.4: Open items(OQ-13~16) 해소 상태 기록
 
 **Exit criteria**: 논문 초안 + 정책 브리프 완성, KB 인수인계 가능 상태
 
@@ -440,18 +457,25 @@ method: string                 # 'GARCH' | 'RDD' | 'SynthControl'
 - Q13: Behavioral fingerprinting 분류기의 false-positive rate 허용 상한은? (권고 시작점: ≤ 10% on Layer 1 held-out)
 - Q14: Layer 1 / Layer 2 결과가 상반될 때 어떤 결론을 main result로 제시할지 사전 등록(pre-registration) 여부?
 - Q15: MEV searcher와 LLM-driven arbitrage agent의 경계 사례 처리 규칙?
+- Q16: 실험 2 세 실험 중 하나만 실험 1과 충돌할 때의 weight 부여 규칙 (ADR-007 미정 이슈)?
 
 -----
 
 ## Appendix A. Claude Code Execution Notes
 
-### A.1 Session Strategy
+### A.1 Session Strategy (ADR-007 two-set 구조 반영)
 
-- Agent A: `src/ingest/` 구현 (혼자 진행 가능)
-- Agent B: `src/entropy/` + 테스트 (A와 병렬)
-- Agent C: `src/event_study/` (A, B 완료 후)
-- Agent D: `src/abm/` (독립, 병렬 가능)
-- Orchestrator: 메인 세션에서 통합, ADR 작성, 결정
+**실험 1 담당 (critical path)**
+- Agent A: `src/ingest/` 구현 (두 세트 공통, 최우선)
+- Agent B: `src/agent_id/` Layer 1 + Layer 2 (E23 Foundation, 실험 1 최우선)
+- Agent C: `src/entropy/` (`H_agent` primary) + `src/event_study/` 3-arm DiD (E26 Primary)
+
+**실험 2 담당 (실험 1 부분 병렬)**
+- Agent D: `src/network/` (E25) + `src/event_study/` H_asset branch (E24)
+- Agent E: `src/abm/` (E27, E23 파라미터 의존)
+
+**공통**
+- Orchestrator: 메인 세션에서 통합, ADR 작성, 세트 간 의존성 감시, 실험 1→실험 2 방향 일치 보고 규율 감시
 
 ### A.2 Context Handoff Pattern (from Harness Engineering book)
 
