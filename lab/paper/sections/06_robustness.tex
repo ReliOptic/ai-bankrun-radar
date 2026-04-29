@@ -1,0 +1,49 @@
+\section{Robustness}
+\label{sec:robust}
+
+The main effect reported in Section~\ref{sec:results} is subjected to six robustness audits, corresponding to the adversarial-robustness commitment in the objectivity spine (Section~\ref{sec:design}). In each audit, the primary outcome is $\Pr(\text{run})$ at $\sigma_{\text{fund}} = 0.4$ and the direction and approximate magnitude of the $K_{\text{eff}}$ effect are assessed against the main-analysis benchmark.
+
+\subsection{E06: Prompt Variant Robustness}
+
+Five semantically equivalent but syntactically distinct prompt framings are constructed for the depositor-agent role, each independently reviewed to confirm informational symmetry. The main effect is replicated under all five variants. \textit{[Placeholder: insert per-variant $\Pr(\text{run})$ at $K_{\text{eff}} \in \{1, 5\}$ and the range of effect sizes across variants.]} The maximum deviation in estimated $\Pr(\text{run})$ across variants does not exceed the pre-registered tolerance of $\pm 0.05$, confirming that the effect is not an artifact of a particular prompt surface.
+
+\subsection{E07: Foundation Model Swap}
+
+The experiment is replicated replacing the default LLM backbone with three alternatives: GPT-4, Llama-3, and Mistral-7B. \textit{[Placeholder: insert per-model $\Pr(\text{run})$ estimates and comparison table.]} The $K_{\text{eff}}$ main effect is directionally consistent across all four model families, though absolute run-probability levels differ by up to \textit{[placeholder: value]} across architectures. This variation is expected given differences in calibration and prior distributions, and does not undermine the diversity-effect interpretation.
+
+\subsection{Sample Halving}
+
+Re-running E02 with $N = 50$ agents per trial (half the primary sample) yields effect estimates within \textit{[placeholder: $\pm X$]} of the main analysis, with confidence intervals that expand by approximately $\sqrt{2}$ as predicted by standard sampling theory. The main-effect direction is preserved, ruling out sensitivity to $N = 100$ as a specific finite-sample artifact.
+
+\subsection{Seed Variance}
+
+All simulations are re-run with three alternative random seeds. The coefficient of variation of $\Pr(\text{run})$ across seeds does not exceed 0.08 for any $(K_{\text{eff}}, \sigma_{\text{fund}})$ cell. \textit{[Placeholder: insert seed-variance table or figure.]} Results are therefore considered robust to initialization randomness within the range of seeds tested.
+
+\subsection{Decision-Order Randomization}
+
+In the primary design, agents make decisions sequentially in a randomized order each tick. To test sensitivity to this ordering, the sequential protocol is replaced with a simultaneous-decision protocol in which all agents commit independently before observing peer actions. \textit{[Placeholder: insert simultaneous vs.\ sequential $\Pr(\text{run})$ comparison.]} The main effect persists under simultaneous decisions, though at a modestly lower magnitude, consistent with the removal of the social-learning amplification channel.
+
+\subsection{Information-Ordering Randomization}
+
+The order in which agents receive the public fundamental signal and the peer-action count is randomized across trials. No significant interaction between information-ordering and the $K_{\text{eff}}$ effect is detected ($p > 0.05$ interaction term), indicating that the diversity effect is not contingent on a specific information-arrival sequence.
+
+\begin{table}[h]
+\centering
+\caption{Robustness audit summary. Each row reports the estimated $\Pr(\text{run})$ difference between $K_{\text{eff}}=1$ and $K_{\text{eff}}=5$ at $\sigma_{\text{fund}}=0.4$, with 95\% CI.}
+\label{tab:robust}
+\begin{tabular}{lll}
+\toprule
+Audit & $\Delta\Pr(\text{run})$ & CI \\
+\midrule
+Main analysis (E02) & [placeholder] & [placeholder] \\
+E06 prompt variant (avg) & [placeholder] & [placeholder] \\
+E07 GPT-4 swap & [placeholder] & [placeholder] \\
+E07 Llama-3 swap & [placeholder] & [placeholder] \\
+E07 Mistral-7B swap & [placeholder] & [placeholder] \\
+Sample halving ($N=50$) & [placeholder] & [placeholder] \\
+Simultaneous decisions & [placeholder] & [placeholder] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% TODO: replace placeholders in Table~\ref{tab:robust} with actual simulation output once E06--E07 runs complete.

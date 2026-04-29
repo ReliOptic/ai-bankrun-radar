@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+venv/
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.pdf
+paper/sections/*.aux
+
+# Local LLM cache (committed selectively, not blanket)
+cache/llm_responses/*.json
+!cache/llm_responses/.gitkeep
+
+# Local secrets
+.env
+.env.local
+*.key

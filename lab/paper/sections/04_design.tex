@@ -1,0 +1,46 @@
+\section{Experimental Design}
+\label{sec:design}
+
+\subsection{Lab Architecture}
+
+The synthetic LLM-agent laboratory consists of five interacting components. The \emph{World Clock} advances in discrete ticks, each representing one decision round; it enforces a configurable time-pressure parameter $t_{\text{press}}$ that compresses the deliberation window available to agents. The \emph{Bank} module tracks the balance sheet---initial reserves, $r_1$ early-withdrawal rate, $r_2$ late-withdrawal rate, and the liquidation threshold $f^*$ derived from Equation~\eqref{eq:dd-threshold}---and emits a binary solvency signal at the end of each round. The \emph{Agent Swarm} consists of $N = 100$ depositor-agents by default, each backed by one of $K$ foundation-model instances; cluster membership is assigned at initialization and held fixed within a trial. The \emph{Information Environment} module injects the fundamental shock $\sigma_{\text{fund}}$ as a noisy public signal and optionally supplements it with social-media-style peer-action counts visible to each agent. The \emph{Metrics Recorder} logs per-tick withdrawal counts, cumulative withdrawal fraction, solvency state, and per-agent decision latency, producing a structured JSON event stream consumed by the analysis pipeline.
+
+\subsection{Objectivity Spine}
+
+The experimental protocol rests on five commitments designed to minimize researcher degrees of freedom and ensure falsifiability. (1) \emph{Prompt neutrality}: all agent system prompts are written to be informationally symmetric with respect to the run vs.\ hold decision; no framing that could prime panic or calm is included. (2) \emph{Symmetric information}: all agents within a cluster receive the same signal; no cluster receives privileged information. (3) \emph{Pre-registration}: hypotheses H1 and H0 (see below), the primary outcome metric, and the analysis plan are registered on AsPredicted.org prior to any simulation run; the registration document is archived in \texttt{lab/prereg/aspredicted\_submission.md}. (4) \emph{Falsifiable null}: H0 predicts no monotone relationship between $K_{\text{eff}}$ and $\Pr(\text{run})$ at $\sigma_{\text{fund}} = 0.4$; the study is powered to reject H0 at $\alpha = 0.05$ with $\beta = 0.20$. (5) \emph{Adversarial robustness audit}: a separate E06/E07 battery tests whether results survive prompt-variant and foundation-model-swap perturbations; any reversal of the main effect in these conditions is treated as disconfirming evidence.
+
+\subsection{Three-Dimensional Experimental Space}
+
+The full parameter space is characterized by three primary axes: $X = \sigma_{\text{fund}} \in \{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8\}$ (fundamental shock magnitude), $Y = K_{\text{eff}} \in \{1, 2, 3, 4, 5, 7\}$ (effective diversity, manipulated via cluster-weight allocation), and $Z = t_{\text{press}} \in \{1, 5, 10\}$ (deliberation window in ticks). The $8 \times 6$ main grid (E03) provides the phase diagram; marginal sweeps along each axis constitute E02 ($K$ sweep at fixed $\sigma_{\text{fund}} = 0.4$) and E05 (time-pressure sweep at $K \in \{1, 3, 5\}$). Correlation structure $(ρ_{\text{intra}}, ρ_{\text{inter}})$ is varied in E04 holding $K = 5$ fixed.
+
+\subsection{Hypotheses}
+
+\textbf{H1 (main effect):} At $\sigma_{\text{fund}} = 0.4$ (sub-critical under full diversity), $\Pr(\text{run})$ is a strictly decreasing function of $K_{\text{eff}}$; specifically, $\Pr(\text{run} \mid K_{\text{eff}}=1) > \Pr(\text{run} \mid K_{\text{eff}}=5)$ with the difference exceeding 0.15.
+
+\textbf{H0 (null):} $\Pr(\text{run})$ does not differ significantly across $K_{\text{eff}} \in \{1, 2, 3, 4, 5, 7\}$ at $\sigma_{\text{fund}} = 0.4$ (one-way ANOVA $p > 0.05$).
+
+\subsection{Pre-Registration}
+
+The full pre-registration document, including the analysis plan, stopping rule, and covariate adjustment strategy, has been submitted to AsPredicted.org and is archived verbatim in \texttt{lab/prereg/aspredicted\_submission.md} in the supplementary repository. All experimental scripts are version-locked to \texttt{git} commit SHA recorded in the pre-registration; any post-registration script changes are logged as amendments with rationale.
+
+% TODO: insert AsPredicted.org submission ID once registered.
+
+\begin{table}[h]
+\centering
+\caption{Experimental cell matrix.}
+\label{tab:cells}
+\begin{tabular}{llll}
+\toprule
+ID & Name & Independent var & Trials \\
+\midrule
+E01 & Calibration baseline & $(R, r_1)$ sweep & analytical \\
+E02 & K sweep (main) & $K_{\text{eff}}$ at $\sigma_{\text{fund}}=0.4$ & 1{,}000 \\
+E03 & $(\sigma, K)$ phase diagram & $8 \times 6$ grid & 2{,}400 \\
+E04 & Cluster correlation & $(\rho_{\text{intra}}, \rho_{\text{inter}})$ at $K{=}5$ & 800 \\
+E05 & Time pressure & $t_{\text{press}}$ at $K \in \{1,3,5\}$ & 900 \\
+E06 & Prompt robustness & 5 neutral variants & 500 \\
+E07 & Foundation model swap & GPT-4 / Claude / Llama / Mistral & 400 \\
+E08 & Counter-mechanism & narrative injection $\times$ intervention & varies \\
+\bottomrule
+\end{tabular}
+\end{table}

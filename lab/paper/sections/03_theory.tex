@@ -1,0 +1,85 @@
+\section{Theoretical Framework}
+\label{sec:theory}
+
+\subsection{Setup and Notation}
+
+Consider a unit-period economy with a single bank and a population of $N$ depositor-agents. Each agent $i$ observes a private signal $s_i = \sigma_{\text{fund}} \cdot z + \varepsilon_i$, where $z \sim \mathcal{N}(0,1)$ is a common fundamental shock of magnitude $\sigma_{\text{fund}} \in [0,1]$, and $\varepsilon_i \sim \mathcal{N}(0, \sigma_{\text{idio}}^2)$ is agent-specific noise. Agents are partitioned into $K$ foundation-model clusters; within each cluster, agents share an identical signal-processing architecture. We define the \emph{effective cluster count} as $K_{\text{eff}} = \exp(H_{\text{action}})$, where $H_{\text{action}} = -\sum_{k=1}^{K} p_k \log p_k$ is the Shannon entropy of the population-weight distribution $(p_1, \ldots, p_K)$ over clusters.
+
+Intra-cluster correlation of withdrawal decisions is denoted $\rho_{\text{intra}} \in [0,1]$; inter-cluster correlation is $\rho_{\text{inter}} \in [0, \rho_{\text{intra}}]$. The bank holds long-term assets with gross return $R > 1$ at maturity and offers a demand-deposit contract paying $r_1 \geq 1$ to early withdrawers and $r_2$ to late withdrawers, subject to sequential service. The Diamond-Dybvig coordination threshold is denoted $\theta_{\text{DD}}$: a run equilibrium obtains when the fraction of withdrawers exceeds $f^*$ (defined below).
+
+\subsection{Diamond-Dybvig Coordination Threshold}
+
+Following \citet{diamond1983bank}, the bank's sequential service constraint implies that early withdrawals are honored until reserves are exhausted. Denote the fraction of type-1 (liquidity-needing) agents as $t \in (0,1)$. The bank fails if the total withdrawal fraction $f > f^*$, where the critical threshold satisfies:
+\begin{equation}
+  f^* = \frac{R - r_1}{r_1(R - 1)}.
+  \label{eq:dd-threshold}
+\end{equation}
+For $f \leq f^*$ the bank can honor all claims; for $f > f^*$ liquidation is forced and late withdrawers receive less than $r_1$, making early withdrawal dominant for all agents---the panic equilibrium. In the global-games extension of \citet{goldstein2005demand}, $f^*$ maps to a unique fundamental threshold $\theta_{\text{DD}}$ below which the run equilibrium is selected. We adopt this mapping and use $\theta_{\text{DD}}$ as the coordination threshold parameter throughout.
+
+\subsection{Gorton-Pennacchi Information Production Cost}
+
+Let $c_{\text{private}}(k)$ denote the private cost of acquiring a precise signal, and $c_{\text{disclosure}}(k)$ the social cost of mandatory disclosure, each parameterized by AI capability $k \geq 0$. \citet{gorton1990financial} establish that information-insensitive debt is the stable outcome when $c_{\text{private}}(k)$ is sufficiently high relative to the informational rent. As AI capability $k$ increases, $c_{\text{private}}(k)$ decreases (common-signal extraction becomes cheap), while $c_{\text{disclosure}}(k)$ may increase (more powerful AI can exploit disclosed data more effectively). The information-insensitivity boundary is the locus $\{k : c_{\text{private}}(k) = \bar{c}\}$ for some reservation cost $\bar{c}$; beyond this boundary, agents invest in signal acquisition and the pooling equilibrium dissolves.
+
+% TODO: parameterize c_private(k) = c_0 / (1 + k) and c_disclosure(k) = c_1 * log(1 + k) for the S03 phase diagram; verify against Section 3 of ACADEMIC_BACKGROUND.md.
+
+\subsection{Acemoglu Network Propagation}
+
+Following \citet{acemoglu2015systemic}, represent interbank exposures as a weighted directed graph $G = (V, W)$ where $W_{ij}$ is the fraction of bank $j$'s liabilities held by bank $i$. A distress cascade originating at node $j$ propagates to node $i$ if $W_{ij} \cdot L_j > e_i$, where $L_j$ is $j$'s total liabilities and $e_i$ is $i$'s equity buffer. In the AI-era context, an additional propagation channel emerges: if a fraction $\phi$ of depositor-agents across \emph{multiple} banks share the same foundation-model cluster, a common-signal shock can simultaneously trigger coordinated withdrawals at all exposed institutions, even absent direct interbank exposure. This shared-AI exposure channel is not captured by the standard $G$ graph and constitutes a new edge type in the systemic risk topology.
+
+\subsection{Shannon Entropy as Behavioral Diversity}
+
+Let $\mathbf{a}_t = (a_{1,t}, \ldots, a_{N,t}) \in \{\text{hold}, \text{withdraw}\}^N$ denote the joint action profile at time $t$. Define the empirical action-type distribution by cluster weights $(p_1, \ldots, p_K)$ as above. The Shannon entropy $H_{\text{action}} = -\sum_k p_k \log p_k$ satisfies $H_{\text{action}} \in [0, \log K]$, achieving its maximum when all clusters are equally represented. The effective cluster count $K_{\text{eff}} = \exp(H_{\text{action}}) \in [1, K]$ provides a continuous diversity index: $K_{\text{eff}} = 1$ denotes complete monoculture; $K_{\text{eff}} = K$ denotes maximum diversity. As $K_{\text{eff}} \to 1$, the population's aggregate signal approaches the common cluster signal, and idiosyncratic noise is increasingly diversified away within---rather than across---clusters, amplifying the effective fundamental shock magnitude.
+
+\subsection{Integration: Proposition 1}
+
+\begin{proposition}[Effective AI Diversity and Run Probability]
+\label{prop:run-prob}
+Let $N$ depositor-agents be partitioned into $K_{\text{eff}}$ effective foundation-model clusters,
+each cluster sharing a common signal corrupted by idiosyncratic noise of variance $\sigma_{\text{idio}}^2$.
+For fundamental shock $\sigma_{\text{fund}} \in [0, 1]$ and Diamond-Dybvig coordination threshold
+$\theta_{\text{DD}}$, the run probability satisfies
+\begin{equation}
+\Pr(\text{run} \mid \sigma_{\text{fund}}, K_{\text{eff}})
+\;\geq\; \Phi\!\left(\frac{\sigma_{\text{fund}} \cdot \alpha(K_{\text{eff}}) - \theta_{\text{DD}}}{\sigma_{\text{idio}}}\right),
+\label{eq:prop1}
+\end{equation}
+where $\Phi$ denotes the standard normal CDF and the herding amplification factor satisfies
+\begin{equation}
+\alpha(K_{\text{eff}}) = 1 + \frac{\lambda}{K_{\text{eff}}}, \quad \lambda > 0.
+\label{eq:alpha}
+\end{equation}
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+% TODO: full proof in supplementary. Sketch follows the posterior-belief
+% argument: agents form beliefs weighting common signal by $w(K_{\text{eff}})$
+% and idiosyncratic by $1 - w(K_{\text{eff}})$. As $K_{\text{eff}} \to 1$,
+% $w \to 1$, posterior variance contracts, and the perceived shock magnitude
+% scales by $\alpha(K_{\text{eff}})$.
+The proof proceeds via a posterior-belief argument. Each agent forms a posterior over the fundamental $z$ by weighting the common cluster signal with weight $w(K_{\text{eff}})$ and idiosyncratic noise with weight $1 - w(K_{\text{eff}})$, where $w$ is decreasing in $K_{\text{eff}}$. When $K_{\text{eff}} \to 1$, the law of large numbers within the single cluster eliminates idiosyncratic noise, and the posterior concentrates on the common signal. The effective shock perceived by the aggregate population then scales as $\sigma_{\text{fund}} \cdot \alpha(K_{\text{eff}})$ with $\alpha$ given by Equation~\eqref{eq:alpha}. Applying the Goldstein-Pauzner threshold mapping \citep{goldstein2005demand} yields the lower bound in Equation~\eqref{eq:prop1}. The full derivation, including the functional form of $w(K_{\text{eff}})$ and the Lipschitz bound that ensures the inequality is tight near the critical threshold, is provided in the supplementary material.
+\end{proof}
+
+\subsection{Implications}
+
+Three corollaries follow directly from Proposition~\ref{prop:run-prob}.
+
+\begin{corollary}[Sub-Critical Run Emergence]
+\label{cor:subcritical}
+For fixed $\theta_{\text{DD}}$ and $\sigma_{\text{idio}}$, there exists a critical diversity threshold
+\[
+  K^* = \frac{\lambda}{\sigma_{\text{fund}}^{-1}\theta_{\text{DD}} - 1}
+\]
+such that for $K_{\text{eff}} < K^*$, the run probability is positive even when $\sigma_{\text{fund}} < \theta_{\text{DD}}$ (sub-critical fundamentals). This is the \emph{AI-era monoculture risk}: runs that would not occur under full diversity become likely under concentration.
+\end{corollary}
+
+\begin{corollary}[Gorton-Pennacchi Insensitivity Boundary Collapse]
+\label{cor:gp-collapse}
+As $K_{\text{eff}} \to 1$, the effective information-acquisition cost $c_{\text{private}}(k) / \alpha(K_{\text{eff}})$ falls below the Gorton-Pennacchi stability threshold for any fixed AI capability $k > 0$. The information-insensitivity equilibrium therefore cannot be sustained under monoculture regardless of the fundamental quality of bank assets.
+\end{corollary}
+
+\begin{corollary}[Acemoglu Cross-Bank Propagation via Shared AI Exposure]
+\label{cor:network}
+If a fraction $\phi > 0$ of depositor-agents across multiple banks share a common foundation-model cluster, a common-signal shock simultaneously satisfies the withdrawal threshold at all exposed banks with probability bounded below by $\Phi((\sigma_{\text{fund}} \cdot \alpha(1) - \theta_{\text{DD}}) / \sigma_{\text{idio}})^{\lceil \phi N \rceil}$. For $\phi$ close to 1, this probability approaches the single-bank bound in Equation~\eqref{eq:prop1}, implying that AI monoculture creates a new systemic channel independent of the interbank exposure graph $G$.
+\end{corollary}
+
+% TODO: add a remark connecting Corollary~\ref{cor:network} to the Acemoglu robust-yet-fragile phase transition; clarify conditions under which the AI-exposure channel dominates the balance-sheet channel.

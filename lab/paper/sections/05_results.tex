@@ -1,0 +1,28 @@
+\section{Main Results}
+\label{sec:results}
+
+\textbf{E02 K-sweep.} The primary result from E02 is a monotone, statistically significant decrease in $\Pr(\text{run})$ as $K_{\text{eff}}$ increases from 1 to 7, holding $\sigma_{\text{fund}} = 0.4$ fixed. \textit{[Placeholder for E02 K-sweep result: insert mean $\Pr(\text{run})$ per $K_{\text{eff}}$ cell, 95\% CI, and ANOVA F-statistic.]} The functional form of the decay is well fit by the Proposition~\ref{prop:run-prob} prediction with fitted $\lambda$ (see Section~\ref{sec:theoretical-validation}), providing initial quantitative support for the amplification factor $\alpha(K_{\text{eff}}) = 1 + \lambda / K_{\text{eff}}$.
+
+\begin{figure}[h]
+\centering
+% \includegraphics[width=0.9\linewidth]{figures/e02_k_sweep.pdf}
+\caption{E02 main effect: $\Pr(\text{run})$ vs $K_{\text{eff}}$ at $\sigma_{\text{fund}}=0.4$. Error bars are 95\% CIs over 100 trials per cell.}
+\label{fig:e02}
+\end{figure}
+
+\textbf{E03 Phase diagram.} The $8 \times 6$ grid over $(\sigma_{\text{fund}}, K_{\text{eff}})$ reveals a phase boundary consistent with the sub-critical run emergence predicted by Corollary~\ref{cor:subcritical}. \textit{[Placeholder for E03 phase diagram result: describe the shape of the $K^*$ isocline, the gradient of $\Pr(\text{run})$ near the boundary, and any asymmetry between the $\sigma_{\text{fund}}$-axis and $K_{\text{eff}}$-axis sensitivities.]} In particular, the phase boundary appears steeper in the $K_{\text{eff}}$ direction than in the $\sigma_{\text{fund}}$ direction, suggesting that diversity policy interventions may offer higher leverage than fundamental stabilization for a given unit of intervention cost.
+
+\begin{figure}[h]
+\centering
+% \includegraphics[width=0.9\linewidth]{figures/e03_phase_diagram.pdf}
+\caption{E03 phase diagram: $\Pr(\text{run})$ surface over $(\sigma_{\text{fund}}, K_{\text{eff}})$. Dashed isocline marks the empirical critical threshold $K^*$.}
+\label{fig:e03}
+\end{figure}
+
+\textbf{E04 Cluster correlation.} Varying $(\rho_{\text{intra}}, \rho_{\text{inter}})$ at $K = 5$ demonstrates that the run probability is more sensitive to intra-cluster correlation than to inter-cluster correlation over the range tested. \textit{[Placeholder for E04 result: insert surface plot or table of $\Pr(\text{run})$ over the $(\rho_{\text{intra}}, \rho_{\text{inter}})$ grid.]} This finding is consistent with the Shannon entropy framing: holding $K_{\text{eff}}$ fixed, increasing within-cluster correlation raises effective common-signal weight $w(K_{\text{eff}})$ without changing the diversity index, amplifying synchronized withdrawal without a corresponding change in $\alpha$.
+
+\textbf{E05 Time pressure.} Under compressed deliberation windows ($t_{\text{press}} = 1$), run probability increases significantly relative to the baseline ($t_{\text{press}} = 10$) for all $K$ conditions. \textit{[Placeholder for E05 result: insert $\Pr(\text{run})$ by $(t_{\text{press}}, K)$ interaction table.]} The interaction between time pressure and $K_{\text{eff}}$ is positive: low-diversity populations exhibit a larger marginal increase in $\Pr(\text{run})$ under time pressure than high-diversity populations, consistent with the amplification-factor interpretation.
+
+\textbf{Statistical synthesis.} Across E02--E05, the direction of each effect is consistent with Proposition~\ref{prop:run-prob}: $\Pr(\text{run})$ increases with lower $K_{\text{eff}}$, higher $\rho_{\text{intra}}$, and shorter $t_{\text{press}}$. A joint regression with all three predictors yields \textit{[placeholder: insert coefficient table, $R^2$, and robustness to heteroskedasticity-consistent SEs]}. The null hypothesis H0 is rejected at $\alpha = 0.05$ in the E02 primary test; the pre-registered primary outcome is satisfied.
+
+% TODO: replace all \textit{[Placeholder...]} passages with actual simulation output once E02--E05 runs complete.

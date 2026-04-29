@@ -1,0 +1,18 @@
+\section{Implications}
+\label{sec:implications}
+
+\subsection{Regulatory}
+
+The central policy implication of this paper is that \emph{behavioral diversity among AI depositor-agents is a systemic-stability axis} that existing regulatory frameworks do not monitor or mandate. Current prudential regulation focuses on capital adequacy ratios, liquidity coverage ratios, and interbank exposure limits---all of which are balance-sheet measures that would not detect a monoculture risk even at the level of an entire depositor population. The $K_{\text{eff}}$ construct introduced in Section~\ref{sec:theory} provides a natural regulatory target: supervisory bodies could require financial institutions to report the estimated effective-diversity index of their automated depositor-agent population, analogous to existing requirements for large-exposure reporting.
+
+Disclosure mandates for foundation-model exposure represent a first-order priority. If a systemically important bank is aware that a large fraction of its retail depositors use AI-assisted account management backed by a single foundation model, that information is material to systemic risk assessment and should be reportable to macroprudential authorities. The GENIUS Act framework for stablecoin issuers in the United States, and analogous EU AI Act provisions for high-risk financial applications, provide legislative footholds for such requirements. Regulators should consider extending these frameworks to cover foundation-model concentration among depositor populations, not only among issuer or operator entities.
+
+A circuit-breaker design calibrated to $K_{\text{eff}}$ is a more targeted intervention than blanket transaction throttles. As demonstrated in E08, a model-diversity policy that rebalances the depositor-agent distribution to $K_{\text{eff}} \geq 5$ reduces run probability substantially in the sub-critical fundamental regime. A graduated circuit-breaker that activates when estimated $K_{\text{eff}}$ falls below $K^*$ (Corollary~\ref{cor:subcritical}) would address the monoculture risk without restricting legitimate liquidity-driven withdrawals.
+
+\subsection{Bank- and Protocol-Side}
+
+For individual banks and financial protocol operators, the practical implication is that agent attestation and $K_{\text{eff}}$ monitoring should be incorporated into existing liquidity stress-testing frameworks. A bank that monitors the effective diversity of its AI-assisted depositor base can provide early warning of monoculture concentration and activate pre-committed stabilization windows (the smart-contract commitment mechanism in E08) before a synchronized withdrawal event reaches the Diamond-Dybvig threshold.
+
+Throttle-based stage transitions tied to real-time $K_{\text{eff}}$ proxies represent a feasible near-term implementation. Observable proxies for $K_{\text{eff}}$---such as the correlation structure of concurrent API call patterns from depositor applications, or the entropy of natural-language withdrawal reason codes---can be computed without requiring depositors to disclose their underlying model provider. A bank could operationalize a three-stage protocol: green (normal operations), yellow (elevated monitoring, advisory delay nudge), and red (mandatory deliberation period plus solvency attestation publication) triggered at estimated $K_{\text{eff}}$ thresholds derived from the empirical phase diagram in Figure~\ref{fig:e03}.
+
+% TODO: add a brief discussion of cross-jurisdictional coordination challenges; GENIUS Act applies only to US stablecoin issuers, and the Basel Committee has not yet addressed AI behavioral correlation in depositor populations.

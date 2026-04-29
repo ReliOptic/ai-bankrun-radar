@@ -1,0 +1,21 @@
+\section{Counter-Mechanisms}
+\label{sec:counter}
+
+Proposition~\ref{prop:run-prob} implies that run probability can be reduced either by increasing $K_{\text{eff}}$ (diversity interventions) or by raising the effective threshold $\theta_{\text{DD}}$ through commitment mechanisms that make early withdrawal less individually rational. Experiment E08 tests four concrete counter-mechanism designs, each operationalized as a narrative-injection or structural modification introduced into the agent swarm at the start of a trial. Each mechanism is evaluated on the same baseline scenario ($\sigma_{\text{fund}} = 0.4$, $K_{\text{eff}} = 2$, $t_{\text{press}} = 5$) to allow direct comparison of run-probability reduction.
+
+\textbf{Smart contract commitment.} Agents are informed that withdrawals during a declared ``stability window'' incur a contractual penalty, raising the effective cost of early exit. \textit{[Placeholder: insert E08 estimated $\Delta\Pr(\text{run})$ for smart-contract intervention.]} This mechanism directly raises $\theta_{\text{DD}}$ and is most effective in the low-$K_{\text{eff}}$ regime where the amplification factor $\alpha$ is largest.
+
+\textbf{Real-time attestation.} An independent oracle publishes a real-time solvency attestation every tick, increasing the precision of the public signal. \textit{[Placeholder: insert E08 result.]} By reducing $\sigma_{\text{fund}}$-perception uncertainty, attestation shifts agents toward the no-run equilibrium without requiring behavioral diversity. The mechanism is most effective when the fundamental is genuinely sound ($\sigma_{\text{fund}} \leq 0.4$); it is less effective near the panic-regime boundary.
+
+\textbf{Computational rationality bound.} A mandatory deliberation delay of $\delta$ ticks is imposed before any withdrawal can be executed, partially offsetting the time-compression effect measured in E05. \textit{[Placeholder: insert E08 result.]} The effectiveness of this mechanism is moderated by $K_{\text{eff}}$: low-diversity populations show a larger run-probability reduction under mandatory delay because monoculture cascades are inherently faster and more sensitive to deliberation windows.
+
+\textbf{Model diversity policy.} The cluster-weight distribution is rebalanced to achieve $K_{\text{eff}} = 5$ before the trial begins, simulating a regulatory requirement that no single foundation model account for more than $1/5$ of the depositor-agent population. \textit{[Placeholder: insert E08 result.]} This is the most direct operationalization of the diversity-restoration strategy implied by Proposition~\ref{prop:run-prob} and Corollary~\ref{cor:subcritical}.
+
+\begin{figure}[h]
+\centering
+% \includegraphics[width=0.9\linewidth]{figures/e08_counter_mechanisms.pdf}
+\caption{E08 counter-mechanism comparison: estimated $\Pr(\text{run})$ reduction relative to no-intervention baseline ($K_{\text{eff}}=2$, $\sigma_{\text{fund}}=0.4$). Error bars are 95\% CIs.}
+\label{fig:e08}
+\end{figure}
+
+% TODO: replace placeholders with actual E08 output. Add a combined-mechanism cell to E08 to test whether smart-contract + diversity-policy interventions are additive or subadditive in run-probability reduction.

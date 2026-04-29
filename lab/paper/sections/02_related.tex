@@ -1,0 +1,28 @@
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Coordination Failures and Bank Runs}
+
+The theoretical foundation for understanding bank runs as equilibrium phenomena was established by \citet{diamond1983bank}, who showed that demand-deposit contracts admit two Nash equilibria: a stable no-run equilibrium and a panic equilibrium driven entirely by self-fulfilling beliefs. The model's central implication---that solvent banks can fail purely through coordination failure---has shaped three decades of regulatory design. \citet{goldstein2005demand} extended this framework to a global-games setting, eliminating the indeterminacy of equilibrium selection and producing a unique threshold equilibrium in which the probability of a run is a continuous function of fundamental quality. Their result is directly relevant to our framework: the Goldstein-Pauzner threshold maps naturally onto the $\theta_{\text{DD}}$ parameter in Proposition~\ref{prop:run-prob}, and the AI-era contribution of this paper can be understood as showing how behavioral monoculture shifts effective fundamental perception upward by a factor $\alpha(K_{\text{eff}}) > 1$.
+
+% TODO: survey additional post-2005 extensions: Morris-Shin (2003), He-Xiong (2012 dynamic bank runs), and Cipriani-Guarino (2014 herding with financial intermediaries).
+
+\subsection{Information Production and Sensitivity}
+
+\citet{gorton1990financial} introduced the concept of information-insensitive debt, arguing that the social value of liquid claims derives precisely from the absence of private information rents: when debt is informationally opaque, agents do not invest in costly signal acquisition, and the resulting pooling equilibrium is stable. The critical insight for the present paper is that this stability depends on the \emph{heterogeneity} of agent information-processing capacity. When a large fraction of agents deploy a shared LLM architecture, the marginal cost of common-signal extraction falls toward zero, collapsing the information-insensitivity boundary. Section~\ref{sec:theory} formalizes this intuition via the Gorton-Pennacchi cost function parameterized by AI capability $k$.
+
+% TODO: add Dang-Gorton-Holmstrom-Ordonez (2017) on information sensitivity and financial crises.
+
+\subsection{Network Propagation and Systemic Risk}
+
+\citet{acemoglu2015systemic} provide the canonical network-theoretic analysis of financial contagion, demonstrating a phase transition between a \emph{robust-yet-fragile} regime (where connectivity buffers small shocks but amplifies large ones) and a cascade regime. Their exposure-graph condition---that a shock propagates whenever a distressed node's liabilities exceed the equity buffer of its creditors---translates directly into the cross-bank propagation corollary (Corollary~3, Section~\ref{sec:theory}) when AI-agent clusters span multiple institutions.
+
+\subsection{Behavioral Diversity and Information Theory}
+
+\citet{shannon1948mathematical} established that the entropy of a discrete distribution over action types provides a natural measure of behavioral diversity. We adopt Shannon entropy $H_{\text{action}}$ as our diversity metric and define the effective cluster count $K_{\text{eff}} = \exp(H_{\text{action}})$, which coincides with the perplexity of the action distribution. This choice ensures that $K_{\text{eff}}$ degrades gracefully under concentration: a population dominated by a single model type yields $K_{\text{eff}} \approx 1$, while a uniformly distributed $K$-model population yields $K_{\text{eff}} = K$.
+
+\subsection{LLM Agent Coordination and Herding}
+
+Recent empirical work has begun to document herding behavior among LLM agents in sequential decision tasks \citep{TBD-llm-herding-2024}. These findings suggest that shared pretraining induces correlated priors that persist even under nominally independent prompting. Our experimental design (Section~\ref{sec:design}) controls for prompt framing through E06 robustness checks and for model architecture through E07 foundation-model swaps, allowing us to isolate the diversity effect from prompt-induced artifacts.
+
+% TODO: survey Park et al. (2023) generative agents, Argyle et al. (2023) out-of-the-box simulation, and Wu et al. (2024) correlated LLM decisions in financial contexts.
