@@ -1,11 +1,48 @@
-# AI Bankrun Radar
+# Signal Governance · AI Bankrun Radar
 
 **A low-cost framework for early detection of behavioral correlation spikes as AI agents enter financial markets.**
 
+[![Live](https://img.shields.io/badge/live-relioptic.github.io%2Fai--bankrun--radar-5B8DEF.svg)](https://relioptic.github.io/ai-bankrun-radar/)
+[![KAIST AI Future Challenge 2026](https://img.shields.io/badge/KAIST-AI%20Future%20Challenge%202026-9CC2FF.svg)]()
+[![AAAI 2027 Submission](https://img.shields.io/badge/AAAI%202027-Submission-E8B14B.svg)]()
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-123%20passing-brightgreen.svg)]()
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)]()
-[![Cost: ~$2/day](https://img.shields.io/badge/operating%20cost-~%242%2Fday-orange.svg)]()
+
+---
+
+## 한국어 요약
+
+가격이 무너지기 전, **AI 동조화 신호**가 먼저 수렴합니다.
+
+AI 에이전트가 같은 정보·같은 모델을 보고 동시에 판단하면, 뱅크런은 인출률이 오르기 전에 이미 **행동의 차원**에서 시작됩니다. **Signal Governance**는 그 집단 행동 수렴을 시간축에서 포착해, 결정론적 규칙으로 단계 개입하고, 모든 조치를 감사 가능한 기록으로 남기는 시장 안전망입니다.
+
+- **Lead time**: 가격 기반 경보 대비 +14h (SVB 2023 calibrated synthetic test)
+- **이론 통합**: Diamond–Dybvig · Gorton–Pennacchi · Acemoglu · Shannon — 4 canonical models의 AI-era 확장
+- **실시간 의사결정 경로 LLM 비중**: 0% (deterministic core, LLM은 사후 설명·감사 보조에 한정)
+
+### 빠른 탐색
+
+| | |
+|---|---|
+| 🌐 **랜딩 페이지 (Layer 2)** | **[relioptic.github.io/ai-bankrun-radar](https://relioptic.github.io/ai-bankrun-radar/)** — 8개 섹션, 시간축 라더, 5 신호, 3-tier 시스템, Track A/B/C 검증 |
+| 📄 **Project Spec** | [`PROJECT_SPEC.md`](./PROJECT_SPEC.md) — 시스템 사양 |
+| 🧪 **Reference implementation** | `src/contagion_radar/` · `tests/` (아래 Implementation Reference 참조) |
+
+### 정직한 자기검증 (이 프로젝트가 아닌 것)
+
+- 실시간 뱅크런 감지기가 아닙니다. 가설 검증 프레임워크입니다.
+- 기관급 프로덕션 시스템이 아닙니다. 개인 프로젝트 규모입니다.
+- 가설 검증이 완료된 연구가 아닙니다. 양방향 가치(지지·기각 모두 학술 기여)를 지향합니다.
+
+> **제출 트랙**: KAIST AI Future Challenge 2026 / AAAI 2027 Submission Package
+> **저자**: Kiwon Cho · KAIST PMBA 13기 · ZEISS Korea
+> **라이선스**: MIT (code) · CC-BY (docs)
+
+---
+
+## Implementation Reference (English)
+
+The `src/` tree contains a reference implementation of the deterministic rule engine described in the landing page's Tier 2. It is provided as part of the AAAI 2027 supplementary material — not as a deployed production system.
 
 ---
 
