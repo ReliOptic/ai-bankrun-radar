@@ -298,35 +298,96 @@
     0%{background-position:0 0}
     100%{background-position:0 200px}
   }
+
+  /* ── Letterbox bars (Signature 1) ───────────────── */
+  /* Thickness timeline: 0–7.5s = 8%, 7.5–8.0s = 12% (freeze close), 10.5s+ = 4% (open/resolution) */
+  .cinema-letterbox-top,
+  .cinema-letterbox-bottom{
+    position:absolute;left:0;right:0;
+    background:#000;z-index:5;pointer-events:none;
+    animation:cinema-letterbox 12.5s cubic-bezier(.4,0,.6,1) forwards;
+  }
+  .cinema-letterbox-top{top:0;transform-origin:top center}
+  .cinema-letterbox-bottom{bottom:0;transform-origin:bottom center}
+  @keyframes cinema-letterbox{
+    /* Act 1–3: 8% — stillness and building */
+    0%    {height:8%}
+    59%   {height:8%}
+    /* Act 4 freeze close: 7.5s → 8.0s */
+    60%   {height:8%}
+    64%   {height:12%}
+    /* Hold closed during freeze (8.0–8.9s) */
+    71%   {height:12%}
+    /* Shake + color pop: snap open slightly */
+    73%   {height:10%}
+    /* Act 5 resolution — open wide */
+    84%   {height:10%}
+    88%   {height:4%}
+    100%  {height:4%}
+  }
+
+  /* ── Horizontal divider hairline (Signature 6) ── */
+  /* Full-width 1px amber hairline; blinks during freeze (7.5–9.0s) */
+  .cinema-divider{
+    position:absolute;left:0;right:0;top:50%;
+    height:1px;
+    background:linear-gradient(90deg,transparent 0%,var(--amber) 8%,var(--amber) 92%,transparent 100%);
+    z-index:4;pointer-events:none;
+    opacity:0;
+    animation:cinema-divider-blink 12.5s forwards;
+  }
+  @keyframes cinema-divider-blink{
+    /* Invisible until freeze starts */
+    0%,59%   {opacity:0}
+    /* Appear and blink during freeze (7.5s = 60%, 9.0s = 72%) */
+    61%      {opacity:1}
+    64%      {opacity:.3}
+    67%      {opacity:1}
+    70%      {opacity:.5}
+    72%      {opacity:1}
+    /* After shake: fade to very subtle, persist */
+    76%      {opacity:.18}
+    100%     {opacity:.12}
+  }
+
   .cinema-inner{
     position:relative;z-index:2;width:100%;max-width:1240px;
     padding:100px 32px 120px;
     display:grid;grid-template-columns:1fr 520px;gap:80px;align-items:center;
   }
   .cinema-left{display:flex;flex-direction:column;gap:0}
+
+  /* ── Copy / CTA — Act 5 resolution (Signature 9) ─ */
+  /* Delays shifted: eyebrow 10.5s, h1 10.8s, subtitle 11.1s, lede 11.4s, cta 11.8s */
+  /* CTA appearance coincides with letterbox opening to 4% */
   .cinema-eyebrow{
     font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;
     color:var(--dim);margin-bottom:28px;display:flex;align-items:center;gap:12px;
-    opacity:0;animation:cinema-fadein .6s ease forwards;animation-delay:9.2s;
+    opacity:0;
+    animation:cinema-fadein .6s ease forwards;
+    animation-delay:10.5s;
   }
   .cinema-eyebrow::before{content:"";width:22px;height:1px;background:var(--blue)}
   .cinema-h1{
     font-family:var(--kr);font-size:clamp(32px,4.2vw,60px);line-height:1.06;
     letter-spacing:-.03em;font-weight:700;color:var(--text);margin:0 0 20px;
-    opacity:0;animation:cinema-fadein .8s ease forwards;animation-delay:9.4s;
+    opacity:0;transform:translateY(8px);
+    animation:cinema-fadein-up .8s ease forwards;
+    animation-delay:10.8s;
   }
+  @keyframes cinema-fadein-up{to{opacity:1;transform:translateY(0)}}
   .cinema-subtitle{
     font-family:var(--en);font-size:clamp(12px,1.1vw,15px);color:var(--dim);
     letter-spacing:-.005em;margin:0 0 28px;line-height:1.4;
-    opacity:0;animation:cinema-fadein .6s ease forwards;animation-delay:9.7s;
+    opacity:0;animation:cinema-fadein .6s ease forwards;animation-delay:11.1s;
   }
   .cinema-lede{
     font-size:16px;color:var(--muted);line-height:1.65;max-width:52ch;margin:0 0 40px;
-    opacity:0;animation:cinema-fadein .7s ease forwards;animation-delay:9.9s;
+    opacity:0;animation:cinema-fadein .7s ease forwards;animation-delay:11.4s;
   }
   .cinema-cta{
     display:flex;gap:14px;flex-wrap:wrap;
-    opacity:0;animation:cinema-fadein .6s ease forwards;animation-delay:10.4s;
+    opacity:0;animation:cinema-fadein .6s ease forwards;animation-delay:11.8s;
   }
   @keyframes cinema-fadein{to{opacity:1}}
 
@@ -356,32 +417,66 @@
   .cinema-sig-bar-fill{height:100%;border-radius:2px;width:0;transition:width 0s}
   .cinema-sig-val{font-family:var(--mono);font-size:11px;color:var(--dim);text-align:right;opacity:0}
 
-  /* Per-signal animation delays (Act 3: 4.5s → 7s, staggered) */
+  /* ── Act 2: Detune (Signature 3) ─────────────────── */
+  /* One grid cell has a subtly off-beat pulse — different timing-function + period */
+  /* The detune-cell pulses at 1.7s with cubic-bezier(.7,.05,.3,.95) while normal cells do 2s ease-in-out */
+  /* It appears during Act 1 stillness (0–3s) and the uncanny flicker is visible at ~1.5–2.8s */
+  .cinema-detune-cell{
+    position:absolute;width:40px;height:40px;
+    border-radius:2px;
+    background:rgba(155,180,220,.0);
+    top:calc(50% - 80px);left:calc(50% + 120px);
+    pointer-events:none;z-index:1;
+    animation:cinema-detune-flicker 1.7s cubic-bezier(.7,.05,.3,.95) infinite;
+    animation-delay:.8s;
+  }
+  @keyframes cinema-detune-flicker{
+    0%,100%{background:rgba(155,180,220,.0);box-shadow:none}
+    45%    {background:rgba(155,180,220,.055);box-shadow:0 0 8px rgba(155,180,220,.08)}
+    55%    {background:rgba(155,180,220,.03);box-shadow:none}
+  }
+
+  /* ── Act 3: Convergence — signal bars (Signature 4) ─ */
+  /* Bars stagger 0.4s apart (5.0, 5.4, 5.8, 6.2, 6.6).                    */
+  /* Synchronization pulse: all 5 bars get a shared opacity ripple at 7.0s  */
+  /* to represent "동조화" — same phase, same timing function, one beat.     */
   .cinema-sig-row:nth-child(1) .cinema-sig-bar-fill{
     background:var(--teal);
-    animation:cinema-bar-1 1.2s cubic-bezier(.4,0,.2,1) forwards;animation-delay:4.6s;
+    animation:cinema-bar-1 1.1s cubic-bezier(.4,0,.2,1) forwards,cinema-sig-sync .35s ease-in-out forwards;
+    animation-delay:5.0s,7.0s;
   }
   .cinema-sig-row:nth-child(2) .cinema-sig-bar-fill{
     background:var(--blue);
-    animation:cinema-bar-2 1.1s cubic-bezier(.4,0,.2,1) forwards;animation-delay:5.0s;
+    animation:cinema-bar-2 1.1s cubic-bezier(.4,0,.2,1) forwards,cinema-sig-sync .35s ease-in-out forwards;
+    animation-delay:5.4s,7.0s;
   }
   .cinema-sig-row:nth-child(3) .cinema-sig-bar-fill{
     background:var(--ice);
-    animation:cinema-bar-3 1.0s cubic-bezier(.4,0,.2,1) forwards;animation-delay:5.4s;
+    animation:cinema-bar-3 1.0s cubic-bezier(.4,0,.2,1) forwards,cinema-sig-sync .35s ease-in-out forwards;
+    animation-delay:5.8s,7.0s;
   }
   .cinema-sig-row:nth-child(4) .cinema-sig-bar-fill{
     background:var(--amber);
-    animation:cinema-bar-4 1.2s cubic-bezier(.4,0,.2,1) forwards;animation-delay:5.8s;
+    animation:cinema-bar-4 1.1s cubic-bezier(.4,0,.2,1) forwards,cinema-sig-sync .35s ease-in-out forwards;
+    animation-delay:6.2s,7.0s;
   }
   .cinema-sig-row:nth-child(5) .cinema-sig-bar-fill{
     background:var(--red);
-    animation:cinema-bar-5 1.3s cubic-bezier(.4,0,.2,1) forwards;animation-delay:6.2s;
+    animation:cinema-bar-5 1.1s cubic-bezier(.4,0,.2,1) forwards,cinema-sig-sync .35s ease-in-out forwards;
+    animation-delay:6.6s,7.0s;
   }
-  .cinema-sig-row:nth-child(1) .cinema-sig-val{animation:cinema-fadein .4s forwards;animation-delay:5.6s}
-  .cinema-sig-row:nth-child(2) .cinema-sig-val{animation:cinema-fadein .4s forwards;animation-delay:5.9s}
-  .cinema-sig-row:nth-child(3) .cinema-sig-val{animation:cinema-fadein .4s forwards;animation-delay:6.2s}
-  .cinema-sig-row:nth-child(4) .cinema-sig-val{animation:cinema-fadein .4s forwards;animation-delay:6.5s}
-  .cinema-sig-row:nth-child(5) .cinema-sig-val{animation:cinema-fadein .4s forwards;animation-delay:6.9s}
+  /* Synchronization single pulse — all 5 fire together, same timing */
+  @keyframes cinema-sig-sync{
+    0%  {filter:brightness(1)}
+    40% {filter:brightness(1.9)}
+    100%{filter:brightness(1)}
+  }
+
+  .cinema-sig-row:nth-child(1) .cinema-sig-val{animation:cinema-fadein .4s forwards;animation-delay:5.9s}
+  .cinema-sig-row:nth-child(2) .cinema-sig-val{animation:cinema-fadein .4s forwards;animation-delay:6.2s}
+  .cinema-sig-row:nth-child(3) .cinema-sig-val{animation:cinema-fadein .4s forwards;animation-delay:6.5s}
+  .cinema-sig-row:nth-child(4) .cinema-sig-val{animation:cinema-fadein .4s forwards;animation-delay:6.8s}
+  .cinema-sig-row:nth-child(5) .cinema-sig-val{animation:cinema-fadein .4s forwards;animation-delay:7.1s}
 
   @keyframes cinema-bar-1{to{width:82%}}
   @keyframes cinema-bar-2{to{width:74%}}
@@ -398,17 +493,34 @@
   }
   .cinema-gauge-svg{width:110px;height:70px}
   .cinema-gauge-arc-bg{fill:none;stroke:var(--line-2);stroke-width:8;stroke-linecap:round}
+
+  /* ── Act 4: Threshold freeze + color explosion (Signature 5 + 8) ── */
+  /* Phase 1 (7.2–8.4s): arc rises amber — color restraint, no drama yet              */
+  /* Phase 2 (8.4–8.8s): freeze — keyframe values locked at 60 dashoffset              */
+  /* Phase 3 (8.8s): explode amber→red in single flash, then shake                     */
   .cinema-gauge-arc{
     fill:none;stroke:var(--amber);stroke-width:8;stroke-linecap:round;
     stroke-dasharray:172;stroke-dashoffset:172;
-    animation:cinema-gauge-fill 1.4s ease forwards;animation-delay:7.2s;
-    transition:stroke .4s ease;
+    animation:cinema-gauge-phase1 1.2s cubic-bezier(.4,0,.6,1) forwards,
+              cinema-gauge-phase2 .4s steps(1,end) forwards,
+              cinema-gauge-phase3 .6s ease forwards;
+    animation-delay:7.2s,8.4s,8.8s;
   }
-  @keyframes cinema-gauge-fill{
-    0%{stroke-dashoffset:172;stroke:var(--amber)}
-    60%{stroke-dashoffset:60;stroke:var(--amber)}
+  @keyframes cinema-gauge-phase1{
+    0%  {stroke-dashoffset:172;stroke:var(--amber)}
+    100%{stroke-dashoffset:60; stroke:var(--amber)}
+  }
+  @keyframes cinema-gauge-phase2{
+    /* Freeze: dashoffset stays at 60 for 0.4s, stroke stays amber */
+    0%,100%{stroke-dashoffset:60;stroke:var(--amber)}
+  }
+  @keyframes cinema-gauge-phase3{
+    /* Explosion: amber→red, complete arc */
+    0%  {stroke-dashoffset:60;stroke:var(--amber)}
+    15% {stroke-dashoffset:55;stroke:#F07A2A}
     100%{stroke-dashoffset:18;stroke:var(--red)}
   }
+
   .cinema-gauge-rt{
     font-family:var(--mono);font-size:22px;font-weight:700;color:var(--text);
     line-height:1;margin-top:-6px;text-align:center;letter-spacing:-.02em;
@@ -422,62 +534,104 @@
     animation:cinema-state-switch 2s forwards;animation-delay:7.2s;
   }
   @keyframes cinema-state-switch{
-    0%,59%{color:var(--amber);content:"경계"}
+    0%,59%{color:var(--amber)}
     60%,100%{color:var(--red)}
   }
+
+  /* Gauge shake fires after freeze releases (Signature 5) */
   .cinema-gauge-shake{
-    animation:cinema-fadein 0s,cinema-shake .4s ease 8.6s;
+    animation:cinema-gauge-shake-anim .15s steps(4,end) forwards;
+    animation-delay:8.8s;
   }
-  @keyframes cinema-shake{
-    0%,100%{transform:translateX(0)}
-    20%{transform:translateX(-3px)}
-    40%{transform:translateX(3px)}
-    60%{transform:translateX(-2px)}
-    80%{transform:translateX(2px)}
+  @keyframes cinema-gauge-shake-anim{
+    0%  {transform:translateX(0)}
+    25% {transform:translateX(-2px)}
+    50% {transform:translateX(2px)}
+    75% {transform:translateX(-1px)}
+    100%{transform:translateX(0)}
   }
+
   .cinema-gauge-threshold{
     position:absolute;top:14px;right:12px;
     font-family:var(--mono);font-size:9px;color:var(--red);letter-spacing:.08em;
-    opacity:0;animation:cinema-fadein .3s forwards;animation-delay:8.2s;
+    opacity:0;animation:cinema-fadein .3s forwards;animation-delay:8.5s;
   }
 
+  /* ── Act 5: Cascading tier cards — staircase light (Signature 7) ─── */
+  /* Cards enter top→bottom: 9.2s, 9.7s, 10.2s with 0.2s gap between   */
+  /* Each card has a ::before pseudo for the cascading edge light        */
   .cinema-tier-stack{flex:1;display:flex;flex-direction:column;gap:10px}
   .cinema-tier-card{
     background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
     padding:14px 18px;
-    opacity:0;transform:translateX(14px);
+    opacity:0;transform:translateY(6px);
     transition:border-color .2s;
+    position:relative;overflow:hidden;
   }
-  .cinema-tier-card:nth-child(1){animation:cinema-tier-in .5s cubic-bezier(.2,0,.2,1) forwards;animation-delay:9.1s}
-  .cinema-tier-card:nth-child(2){animation:cinema-tier-in .5s cubic-bezier(.2,0,.2,1) forwards;animation-delay:9.5s}
-  .cinema-tier-card:nth-child(3){animation:cinema-tier-in .5s cubic-bezier(.2,0,.2,1) forwards;animation-delay:9.9s}
-  @keyframes cinema-tier-in{to{opacity:1;transform:translateX(0)}}
+  /* Stagger: Observation 9.2s, Engine 9.7s, Audit 10.2s — 0.5s apart, 0.2s gap built into delay delta */
+  .cinema-tier-card:nth-child(1){
+    animation:cinema-tier-in .45s cubic-bezier(.2,0,.2,1) forwards;
+    animation-delay:9.2s;
+  }
+  .cinema-tier-card:nth-child(2){
+    animation:cinema-tier-in .45s cubic-bezier(.2,0,.2,1) forwards;
+    animation-delay:9.7s;
+  }
+  .cinema-tier-card:nth-child(3){
+    animation:cinema-tier-in .45s cubic-bezier(.2,0,.2,1) forwards;
+    animation-delay:10.2s;
+  }
+  @keyframes cinema-tier-in{to{opacity:1;transform:translateY(0)}}
+
+  /* Left-edge cascading light — light falls from top to bottom on card entrance */
+  .cinema-tier-card::before{
+    content:"";
+    position:absolute;left:0;top:0;width:1px;height:100%;
+    background:linear-gradient(to bottom,transparent 0%,var(--amber) 40%,var(--amber) 60%,transparent 100%);
+    transform:translateY(-100%);
+    opacity:0;
+  }
+  .cinema-tier-card:nth-child(1)::before{
+    animation:cinema-cascade-light .7s ease-out forwards;
+    animation-delay:9.2s;
+  }
+  .cinema-tier-card:nth-child(2)::before{
+    animation:cinema-cascade-light .7s ease-out forwards;
+    animation-delay:9.7s;
+  }
+  .cinema-tier-card:nth-child(3)::before{
+    animation:cinema-cascade-light .7s ease-out forwards;
+    animation-delay:10.2s;
+  }
+  @keyframes cinema-cascade-light{
+    0%  {transform:translateY(-100%);opacity:.9}
+    60% {transform:translateY(0%);   opacity:.7}
+    100%{transform:translateY(100%); opacity:0}
+  }
+
   .cinema-tier-num{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.14em;margin-bottom:4px}
   .cinema-tier-name{font-size:14px;font-weight:600;letter-spacing:-.01em;margin-bottom:3px}
   .cinema-tier-cap{font-size:12px;color:var(--muted)}
 
-  /* Beacon (Act 2) */
+  /* ── Act 2: Beacon — single signal point (Signature 3 second beat) ── */
+  /* Beacon appears at 4.0s (second beat of Act 2, after detune at 3.0s) */
   .cinema-beacon{
     position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:8px;height:8px;border-radius:50%;background:var(--teal);
     box-shadow:0 0 0 0 rgba(61,214,181,.7);
     opacity:0;
-    animation:cinema-beacon-appear .4s ease forwards 2s,cinema-beacon-pulse 1.2s ease-in-out infinite 2.4s;
+    animation:cinema-beacon-appear .4s ease forwards 4.0s,cinema-beacon-pulse 1.2s ease-in-out infinite 4.4s;
   }
   @keyframes cinema-beacon-appear{to{opacity:1}}
   @keyframes cinema-beacon-pulse{
-    0%{box-shadow:0 0 0 0 rgba(61,214,181,.7)}
-    60%{box-shadow:0 0 0 18px rgba(61,214,181,0)}
+    0%  {box-shadow:0 0 0 0 rgba(61,214,181,.7)}
+    60% {box-shadow:0 0 0 18px rgba(61,214,181,0)}
     100%{box-shadow:0 0 0 0 rgba(61,214,181,0)}
   }
 
-  /* Threshold line (Act 4) */
+  /* Threshold line (legacy — replaced by cinema-divider for full-width hairline) */
   .cinema-threshold-line{
-    position:absolute;left:0;right:0;top:50%;
-    height:1px;background:linear-gradient(90deg,transparent,var(--red) 20%,var(--red) 80%,transparent);
-    opacity:0;
-    animation:cinema-fadein .4s forwards 7.8s;
-    pointer-events:none;z-index:1;
+    display:none;
   }
 
   /* Responsive */
@@ -492,6 +646,26 @@
   @media (max-width: 768px){
     .cinema-inner{padding:64px 24px 80px}
     .cinema-sig-row{grid-template-columns:16px 1fr 80px 28px}
+    /* Mobile letterbox: thinner */
+    @keyframes cinema-letterbox{
+      0%    {height:6%}
+      59%   {height:6%}
+      60%   {height:6%}
+      64%   {height:10%}
+      71%   {height:10%}
+      73%   {height:8%}
+      84%   {height:8%}
+      88%   {height:3%}
+      100%  {height:3%}
+    }
+    /* Mobile shake: smaller amplitude */
+    @keyframes cinema-gauge-shake-anim{
+      0%  {transform:translateX(0)}
+      25% {transform:translateX(-1px)}
+      50% {transform:translateX(1px)}
+      75% {transform:translateX(-.5px)}
+      100%{transform:translateX(0)}
+    }
   }
   @media (max-width: 600px){
     .cinema-inner{padding:56px 20px 72px}
@@ -501,24 +675,26 @@
 
   /* prefers-reduced-motion */
   @media (prefers-reduced-motion: reduce){
-    .cinema-scanline{animation:none}
+    .cinema-scanline,.cinema-detune-cell{animation:none}
+    /* Letterbox stays at 8% — preserves cinematic impression without motion */
+    .cinema-letterbox-top,.cinema-letterbox-bottom{animation:none;height:8%}
+    .cinema-divider{animation:none;opacity:.15}
     .cinema-eyebrow,.cinema-h1,.cinema-subtitle,.cinema-lede,.cinema-cta,
     .cinema-sig-val,.cinema-tier-card,.cinema-gauge-state,.cinema-gauge-threshold{
       animation:none;opacity:1;transform:none;
     }
-    .cinema-sig-bar-fill{
-      animation:none;
-    }
+    .cinema-sig-bar-fill{animation:none}
     .cinema-sig-row:nth-child(1) .cinema-sig-bar-fill{width:82%}
     .cinema-sig-row:nth-child(2) .cinema-sig-bar-fill{width:74%}
     .cinema-sig-row:nth-child(3) .cinema-sig-bar-fill{width:68%}
     .cinema-sig-row:nth-child(4) .cinema-sig-bar-fill{width:79%}
     .cinema-sig-row:nth-child(5) .cinema-sig-bar-fill{width:91%}
     .cinema-gauge-arc{animation:none;stroke:var(--red);stroke-dashoffset:18}
-    .cinema-gauge-state{color:var(--red)}
-    .cinema-gauge-threshold{opacity:1}
+    .cinema-gauge-state{animation:none;color:var(--red)}
+    .cinema-gauge-threshold{animation:none;opacity:1}
+    .cinema-gauge-shake{animation:none}
     .cinema-beacon{animation:none;opacity:1}
-    .cinema-threshold-line{animation:none;opacity:1}
+    .cinema-tier-card::before{animation:none}
   }
 </style>
 </head>
@@ -557,6 +733,13 @@
   <div class="cinema-grid-bg" aria-hidden="true"></div>
   <div class="cinema-noise" aria-hidden="true"></div>
   <div class="cinema-scanline" aria-hidden="true"></div>
+  <!-- Letterbox 2.39:1 bars — top and bottom, animating thickness through acts -->
+  <div class="cinema-letterbox-top" aria-hidden="true"></div>
+  <div class="cinema-letterbox-bottom" aria-hidden="true"></div>
+  <!-- Full-width amber hairline divider — appears and blinks during Act 4 freeze -->
+  <div class="cinema-divider" aria-hidden="true"></div>
+  <!-- Detune cell — single off-beat grid cell visible during Act 1 stillness -->
+  <div class="cinema-detune-cell" aria-hidden="true"></div>
   <div class="cinema-beacon" aria-hidden="true"></div>
   <div class="cinema-threshold-line" aria-hidden="true"></div>
 
